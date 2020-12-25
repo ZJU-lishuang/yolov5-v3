@@ -269,11 +269,11 @@ def detect(save_img=False):
                             alarmvideo_list[video_file] = 1
                             image_path = os.path.join(outvideo, str(videodataset.frame) + '_alarmvideo.jpg')
                             cv2.imwrite(image_path, im0)
-                    file_data = ""
-                    for single_video in alarmvideo_list:
-                        file_data += str(single_video) + ', value: ' + str(alarmvideo_list[single_video]) + '\n'
-                    with open(f'{os.path.basename(video_path)}_video_result_{opt.conf_thres}.txt', 'a') as f:
-                        f.write(file_data)
+            file_data = ""
+            for single_video in alarmvideo_list:
+                file_data += str(single_video) + ', value: ' + str(alarmvideo_list[single_video]) + '\n'
+            with open(f'{os.path.basename(video_path)}_video_result_{opt.conf_thres}.txt', 'a') as f:
+                f.write(file_data)
 
     # if save_txt or save_img:
     #     print('Results saved to %s' % save_dir)
