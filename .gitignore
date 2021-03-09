@@ -21,13 +21,7 @@
 *.json
 
 
-#classification
-configs/
-mmcls/
-fangweisui_test_classification.py
-fangweisui_test_mmclassification.py
-ckpts/
-model_res.py
+
 
 #fangweisui
 fangweisui_test.py
