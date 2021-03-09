@@ -522,6 +522,11 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
 
             # Loss
             loss, loss_items = compute_loss(pred, targets.to(device), model)  # scaled by batch_size
+            if rank != -1:
+                loss *= opt.world_size  # gradient averaged between devices in DDP mode
+            if not torch.isfinite(loss):
+                print('WARNING: non-finite loss, ending training ', loss_items)
+                return results
 
             # Backward
             # scaler.scale(loss).backward()
@@ -600,10 +605,10 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
             for x, tag in zip(list(mloss[:-1]) + list(results) + lr, tags):
                 if tb_writer:
                     tb_writer.add_scalar(tag, x, epoch)  # tensorboard
-                bn_weights = gather_bn_weights(cfg_model.module_list, prune_idx)
-                tb_writer.add_histogram('bn_weights/hist', bn_weights.numpy(), epoch, bins='doane')
                 if wandb:
                     wandb.log({tag: x})  # W&B
+            bn_weights = gather_bn_weights(cfg_model.module_list, prune_idx)
+            tb_writer.add_histogram('bn_weights/hist', bn_weights.numpy(), epoch, bins='doane')
 
             # Update best mAP
             fi = fitness(np.array(results).reshape(1, -1))  # weighted combination of [P, R, mAP@.5, mAP@.5-.95]
